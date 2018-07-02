@@ -215,8 +215,8 @@ def detect_img(yolo):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('-m', '--model', help='model file path', default='model_data/yolo.h5')
-    parser.add_argument('-a', '--anchor', help='anchor file path', default='model_data/yolo_anchors.txt')
-    parser.add_argument('-c', '--class', help='class file path', default='model_data/coco_classes.txt')
+    parser.add_argument('-m', '--modelpath', help='model file path', default='model_data/yolo.h5')
+    parser.add_argument('-a', '--anchorpath', help='anchor file path', default='model_data/yolo_anchors.txt')
+    parser.add_argument('-c', '--classpath', help='class file path', default='model_data/coco_classes.txt')
     args = parser.parse_args()
-    detect_img(YOLO(args.model, args.anchor, args.class))
+    detect_img(YOLO(args.modelpath, args.anchorpath, args.classpath))
