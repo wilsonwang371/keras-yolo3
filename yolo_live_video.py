@@ -3,7 +3,7 @@ from picamera.array import PiRGBArray
 from picamera import PiCamera
 import time
 import cv2
-from matplotlib.pyplot import plt
+import matplotlib.pyplot as plt
  
 # initialize the camera and grab a reference to the raw camera capture
 camera = PiCamera()
