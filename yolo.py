@@ -214,6 +214,7 @@ def detect_img(yolo):
 
 
 if __name__ == '__main__':
+    # prerequisite: pip3 install "picamera[array]"
     # my command python3 ./yolo.py -m  model_data/yolov3-tiny.h5
     #                              -c model_data/coco_classes.txt
     #                              -a model_data/tiny_yolo_anchors.txt
