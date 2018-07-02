@@ -3,8 +3,9 @@ from picamera.array import PiRGBArray
 from picamera import PiCamera
 import time
 import cv2
-import matplotlib.pyplot as plt
- 
+
+windowName = 'Frame'
+
 # initialize the camera and grab a reference to the raw camera capture
 camera = PiCamera()
 camera.resolution = (640, 480)
@@ -13,7 +14,9 @@ rawCapture = PiRGBArray(camera, size=(640, 480))
  
 # allow the camera to warmup
 time.sleep(0.1)
- 
+
+cv2.namedWindow(windowName)
+
 # capture frames from the camera
 for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
     # grab the raw NumPy array representing the image, then initialize the timestamp
@@ -21,9 +24,7 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
     image = frame.array
  
     # show the frame
-    #cv2.imshow("Frame", image)
-    plt.imshow(image)
-    plt.show()
+    cv2.imshow(windowName, image)
     key = cv2.waitKey(1) & 0xFF
  
     # clear the stream in preparation for the next frame
