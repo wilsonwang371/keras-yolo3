@@ -17,11 +17,13 @@ from PIL import Image, ImageFont, ImageDraw
 from yolo3.model import yolo_eval, yolo_body, tiny_yolo_body
 from yolo3.utils import letterbox_image
 
+import argparse
+
 class YOLO(object):
-    def __init__(self):
-        self.model_path = 'model_data/yolo.h5' # model path or trained weights path
-        self.anchors_path = 'model_data/yolo_anchors.txt'
-        self.classes_path = 'model_data/coco_classes.txt'
+    def __init__(self, model_path, anchor_path, class_path):
+        self.model_path = model_path # model path or trained weights path
+        self.anchors_path = anchor_path
+        self.classes_path = class_path
         self.score = 0.3
         self.iou = 0.45
         self.class_names = self._get_class()
@@ -212,4 +214,9 @@ def detect_img(yolo):
 
 
 if __name__ == '__main__':
-    detect_img(YOLO())
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-m', '--model', help='model file path', default='model_data/yolo.h5')
+    parser.add_argument('-a', '--anchor', help='anchor file path', default='model_data/yolo_anchors.txt')
+    parser.add_argument('-c', '--class', help='class file path', default='model_data/coco_classes.txt')
+    args = parser.parse_args()
+    detect_img(YOLO(args.model, args.anchor, args.class))
