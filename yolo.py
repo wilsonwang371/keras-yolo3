@@ -214,6 +214,9 @@ def detect_img(yolo):
 
 
 if __name__ == '__main__':
+    # my command python3 ./yolo.py -m  model_data/yolov3-tiny.h5
+    #                              -c model_data/coco_classes.txt
+    #                              -a model_data/tiny_yolo_anchors.txt
     parser = argparse.ArgumentParser()
     parser.add_argument('-m', '--modelpath', help='model file path', default='model_data/yolo.h5')
     parser.add_argument('-a', '--anchorpath', help='anchor file path', default='model_data/yolo_anchors.txt')
