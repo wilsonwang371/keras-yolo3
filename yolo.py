@@ -198,12 +198,12 @@ def detect_video(yolo, video_path, output_path=""):
     yolo.close_session()
 
 
-def detect_img(yolo, arg_img):
+def detect_img(yolo, img_path):
     while True:
-        if arg_img == '':
+        if img_path == '':
             img = input('Input image filename:')
         else:
-            img = arg_img
+            img = img_path
         try:
             image = Image.open(img)
         except:
@@ -217,7 +217,7 @@ def detect_img(yolo, arg_img):
             cv2.imshow('r_image', cv_r_img)
             cv2.waitKey(0)
             cv2.destroyAllWindows()
-        if arg_img != '':
+        if img_path != '':
             break
     yolo.close_session()
 
