@@ -33,6 +33,7 @@ class YOLO(object):
         self.sess = K.get_session()
         self.model_image_size = (416, 416) # fixed size or (None, None), hw
         self.boxes, self.scores, self.classes = self.generate()
+        self.font = None
 
     def _get_class(self):
         classes_path = os.path.expanduser(self.classes_path)
@@ -87,7 +88,7 @@ class YOLO(object):
                 score_threshold=self.score, iou_threshold=self.iou)
         return boxes, scores, classes
 
-    def detect_image(self, image):
+    def detect_image(self, image, print_shape=True):
         start = timer()
 
         if self.model_image_size != (None, None):
@@ -100,7 +101,8 @@ class YOLO(object):
             boxed_image = letterbox_image(image, new_image_size)
         image_data = np.array(boxed_image, dtype='float32')
 
-        print(image_data.shape)
+        if print_shape:
+            print(image_data.shape)
         image_data /= 255.
         image_data = np.expand_dims(image_data, 0)  # Add batch dimension.
 
@@ -114,7 +116,7 @@ class YOLO(object):
 
         print('Found {} boxes for {}'.format(len(out_boxes), 'img'))
 
-        if hasattr(self, 'font'):
+        if hasattr(self, 'font') and self.font is not None:
             font = self.font
         else:
             font = ImageFont.truetype(font='font/FiraMono-Medium.otf',
@@ -240,7 +242,7 @@ def detect_picamera(yolo):
     cv2.namedWindow('picam', cv2.WINDOW_NORMAL)
     for img_frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
         try:
-            r_image = yolo.detect_image(Image.fromarray(img_frame.array))
+            r_image = yolo.detect_image(Image.fromarray(img_frame.array), False)
             cv2.imshow('picam', np.array(r_image))
             rawCapture.truncate(0)
         except KeyboardInterrupt:
