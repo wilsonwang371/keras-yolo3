@@ -240,11 +240,11 @@ def detect_picamera(yolo):
         #stream.seek(0)
         #org_img = Image.open(stream)
         r_image = yolo.detect_image(Image.fromarray(img_array))
-        cv2.imshow('picam', img_array)
-        #cv2.imshow('picam', np.array(r_image))
+        #cv2.imshow('picam', img_array)
+        cv2.imshow('picam', np.array(r_image))
         #stream.truncate(0)
         #stream.seek(0)
-        if cv2.waitKey(0) & 0xFF == ord('q'):
+        if cv2.waitKey(1) & 0xFF == ord('q'):
             break
         rawCapture.truncate(0)
     cv2.destroyAllWindows()
