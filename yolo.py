@@ -244,9 +244,9 @@ def detect_picamera(yolo):
         #cv2.imshow('picam', np.array(r_image))
         #stream.truncate(0)
         #stream.seek(0)
-        rawCapture.truncate(0)
-        if cv2.waitKey(1) & 0xFF == ord('q'):
+        if cv2.waitKey(0) & 0xFF == ord('q'):
             break
+        rawCapture.truncate(0)
     cv2.destroyAllWindows()
     yolo.close_session()
 
