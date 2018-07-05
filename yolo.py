@@ -248,13 +248,13 @@ def detect_picamera(yolo):
     rawCapture = PiRGBArray(camera, size=(640, 480))
 
     cv2.namedWindow('picam', cv2.WINDOW_NORMAL)
-    cam_q = Queue.Queue(16)
-    processed_q = Queue.Queue(16)
+    cam_q = queue.Queue(16)
+    processed_q = queue.Queue(16)
     processThread = threading.Thread(target=detect_picamera_yolo_thread_func,
                                      args=(yolo, cam_q, processed_q))
     processThread.start()
     print('started')
-    for img_frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
+    for img_frame in camera.capture_continuous(rawCapture, format='bgr', use_video_port=True):
         try:
             img = Image.fromarray(img_frame.array)
             cam_q.put(img)
