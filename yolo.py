@@ -235,7 +235,7 @@ def detect_picamera(yolo):
 
     cv2.namedWindow('picam', cv2.WINDOW_NORMAL)
     while True:
-        camera.capture(stream, format='bgr', use_video_port=True)
+        camera.capture(stream, format='jpeg', use_video_port=True)
         #img_array = img_frame.array
         stream.seek(0)
         r_image = yolo.detect_image(Image.open(stream))
