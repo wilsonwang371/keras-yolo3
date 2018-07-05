@@ -231,19 +231,20 @@ def detect_picamera(yolo):
     camera = PiCamera()
     camera.resolution = (640, 480)
     #camera.framerate = 32
-    stream = io.BytesIO()
+    rawCapture = PiRGBArray(camera, size=(640, 480))
 
     cv2.namedWindow('picam', cv2.WINDOW_NORMAL)
-    while True:
-        camera.capture(stream, format='jpeg', use_video_port=True)
-        #img_array = img_frame.array
-        stream.seek(0)
-        org_img = Image.open(stream)
-        r_image = yolo.detect_image(org_img)
-        cv2.imshow('picam', np.array(org_img))
+    for img_frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
+        #camera.capture(stream, format='jpeg', use_video_port=True)
+        img_array = img_frame.array
+        #stream.seek(0)
+        #org_img = Image.open(stream)
+        r_image = yolo.detect_image(Image.fromarray(img_array))
+        cv2.imshow('picam', img_array)
         #cv2.imshow('picam', np.array(r_image))
-        stream.truncate(0)
-        stream.seek(0)
+        #stream.truncate(0)
+        #stream.seek(0)
+        rawCapture.truncate(0)
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
     cv2.destroyAllWindows()
