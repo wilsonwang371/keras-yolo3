@@ -222,7 +222,7 @@ def detect_img(yolo, img_path):
             break
     yolo.close_session()
 
-def detect_picamera(yolo, device=0, port=0):
+def detect_picamera(yolo):
     ''' Raspberry PI camera
     '''
     from picamera.array import PiRGBArray
@@ -261,4 +261,7 @@ if __name__ == '__main__':
     action.add_argument('-p', '--picam', help='fetch images from Raspberry PI camera',
                         action='store_true', default=False)
     args = parser.parse_args()
-    detect_img(YOLO(args.modelpath, args.anchorpath, args.classpath), args.image)
+    if args.picam == True:
+        detect_picamera(YOLO(args.modelpath, args.anchorpath, args.classpath))
+    else:
+        detect_img(YOLO(args.modelpath, args.anchorpath, args.classpath), args.image)
