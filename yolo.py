@@ -232,11 +232,15 @@ def detect_img(yolo, img_path):
     yolo.close_session()
 
 
+quit_thread = False
+
 def detect_picamera(yolo):
     ''' Raspberry PI camera
     '''
     from picamera.array import PiRGBArray
     from picamera import PiCamera
+    import threading
+    import queue
 
     camera = PiCamera()
     camera.resolution = (640, 480)
@@ -244,18 +248,34 @@ def detect_picamera(yolo):
     rawCapture = PiRGBArray(camera, size=(640, 480))
 
     cv2.namedWindow('picam', cv2.WINDOW_NORMAL)
+    cam_q = Queue.Queue(16)
+    processed_q = Queue.Queue(16)
+    processThread = threading.Thread(target=detect_picamera_yolo_thread_func,
+                                     args=(yolo, cam_q, processed_q))
+    processThread.start()
     print('started')
     for img_frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
         try:
-            r_image = yolo.detect_image(Image.fromarray(img_frame.array), False)
-            cv2.imshow('picam', np.array(r_image))
-            cv2.waitKey(1)
+            img = Image.fromarray(img_frame.array)
+            cam_q.put(img)
+            while not processed_q.empty():
+                cv2.imshow('picam', np.array(processed_q.get()))
+                cv2.waitKey(1)
             rawCapture.truncate(0)
         except KeyboardInterrupt:
             print('exiting...')
             break
+    quit_thread = True
+    processThread.join()
     cv2.destroyAllWindows()
     yolo.close_session()
+
+
+def detect_picamera_yolo_thread_func(yolo, cam_queue, out_queue):
+    while not quit_thread:
+        img = cam_queue.get()
+        r_image = yolo.detect_image(img, False)
+        out_queue.put(r_image)
 
 
 if __name__ == '__main__':
