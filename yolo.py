@@ -217,7 +217,6 @@ def detect_img(yolo, arg_img):
             cv2.imshow('r_image', cv_r_img)
             cv2.waitKey(0)
             cv2.destroyAllWindows()
-            input("Press Enter to continue...")
         if arg_img != '':
             break
     yolo.close_session()
