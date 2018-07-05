@@ -4,20 +4,21 @@
 Run a YOLO_v3 style detection model on test images.
 """
 
+import argparse
 import colorsys
 import os
 from timeit import default_timer as timer
 
 import numpy as np
 from keras import backend as K
-from keras.models import load_model
 from keras.layers import Input
-from PIL import Image, ImageFont, ImageDraw
+from keras.models import load_model
+from PIL import Image, ImageDraw, ImageFont
 
-from yolo3.model import yolo_eval, yolo_body, tiny_yolo_body
+import cv2
+from yolo3.model import tiny_yolo_body, yolo_body, yolo_eval
 from yolo3.utils import letterbox_image
 
-import argparse
 
 class YOLO(object):
     def __init__(self, model_path, anchor_path, class_path):
@@ -157,7 +158,6 @@ class YOLO(object):
 
 
 def detect_video(yolo, video_path, output_path=""):
-    import cv2
     vid = cv2.VideoCapture(video_path)
     if not vid.isOpened():
         raise IOError("Couldn't open webcam or video")
@@ -208,7 +208,9 @@ def detect_img(yolo):
             continue
         else:
             r_image = yolo.detect_image(image)
-            r_image.show()
+            cv_r_img = np.arrays(r_image)
+            #r_image.show()
+            cv2.imshow('r_image', r_image)
     yolo.close_session()
 
 
