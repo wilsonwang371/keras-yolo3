@@ -255,7 +255,7 @@ def detect_picamera(yolo):
 
     cv2.namedWindow('picam', cv2.WINDOW_NORMAL)
     cam_q = queue.Queue(4)
-    processed_q = queue.Queue(16)
+    processed_q = queue.Queue(4)
     processThread = threading.Thread(target=detect_picamera_yolo_thread_func,
                                      args=(yolo, cam_q, processed_q))
     processThread.start()
