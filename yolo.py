@@ -244,6 +244,7 @@ def detect_picamera(yolo):
     rawCapture = PiRGBArray(camera, size=(640, 480))
 
     cv2.namedWindow('picam', cv2.WINDOW_NORMAL)
+    print('started')
     for img_frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
         try:
             r_image = yolo.detect_image(Image.fromarray(img_frame.array), False)
