@@ -11,6 +11,7 @@ import os
 from timeit import default_timer as timer
 
 import numpy as np
+import tensorflow as tf
 from keras import backend as K
 from keras.layers import Input
 from keras.models import load_model
@@ -20,6 +21,8 @@ import cv2
 from yolo3.model import tiny_yolo_body, yolo_body, yolo_eval
 from yolo3.utils import letterbox_image
 
+graph = None
+quit_thread = False
 
 class YOLO(object):
     def __init__(self, model_path, anchor_path, class_path):
@@ -232,8 +235,6 @@ def detect_img(yolo, img_path):
     yolo.close_session()
 
 
-quit_thread = False
-
 def detect_picamera(yolo):
     ''' Raspberry PI camera
     '''
@@ -242,6 +243,7 @@ def detect_picamera(yolo):
     import threading
     import queue
 
+    graph = tf.get_default_graph()
     camera = PiCamera()
     camera.resolution = (640, 480)
     #camera.framerate = 32
@@ -272,10 +274,12 @@ def detect_picamera(yolo):
 
 
 def detect_picamera_yolo_thread_func(yolo, cam_queue, out_queue):
-    while not quit_thread:
-        img = cam_queue.get()
-        r_image = yolo.detect_image(img, False)
-        out_queue.put(r_image)
+    global graph
+    with graph.as_default():
+        while not quit_thread:
+            img = cam_queue.get()
+            r_image = yolo.detect_image(img, False)
+            out_queue.put(r_image)
 
 
 if __name__ == '__main__':
