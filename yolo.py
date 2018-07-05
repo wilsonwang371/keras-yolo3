@@ -114,8 +114,12 @@ class YOLO(object):
 
         print('Found {} boxes for {}'.format(len(out_boxes), 'img'))
 
-        font = ImageFont.truetype(font='font/FiraMono-Medium.otf',
-                    size=np.floor(3e-2 * image.size[1] + 0.5).astype('int32'))
+        if hasattr(self, 'font'):
+            font = self.font
+        else:
+            font = ImageFont.truetype(font='font/FiraMono-Medium.otf',
+                        size=np.floor(3e-2 * image.size[1] + 0.5).astype('int32'))
+            self.font = font
         thickness = (image.size[0] + image.size[1]) // 300
 
         for i, c in reversed(list(enumerate(out_classes))):
@@ -235,24 +239,17 @@ def detect_picamera(yolo):
 
     cv2.namedWindow('picam', cv2.WINDOW_NORMAL)
     for img_frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
-        #camera.capture(stream, format='jpeg', use_video_port=True)
-        img_array = img_frame.array
-        #stream.seek(0)
-        #org_img = Image.open(stream)
-        r_image = yolo.detect_image(Image.fromarray(img_array))
-        #cv2.imshow('picam', img_array)
-        cv2.imshow('picam', np.array(r_image))
-        #stream.truncate(0)
-        #stream.seek(0)
-        if cv2.waitKey(1) & 0xFF == ord('q'):
+        try:
+            r_image = yolo.detect_image(Image.fromarray(img_frame.array))
+            cv2.imshow('picam', np.array(r_image))
+            rawCapture.truncate(0)
+        except KeyboardInterrupt:
+            print('exiting...')
             break
-        rawCapture.truncate(0)
     cv2.destroyAllWindows()
     yolo.close_session()
 
 if __name__ == '__main__':
-    # prerequisite: pip3 install "picamera[array]"
-    #               sudo apt install libgtk2.0-dev pkg-config
     # my command python3 ./yolo.py -m  model_data/yolov3-tiny.h5
     #                              -c model_data/coco_classes.txt
     #                              -a model_data/tiny_yolo_anchors.txt
