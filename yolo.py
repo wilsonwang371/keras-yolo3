@@ -88,8 +88,9 @@ class YOLO(object):
                 score_threshold=self.score, iou_threshold=self.iou)
         return boxes, scores, classes
 
-    def detect_image(self, image, print_shape=True):
-        start = timer()
+    def detect_image(self, image, verbose=True):
+        if verbose:
+            start = timer()
 
         if self.model_image_size != (None, None):
             assert self.model_image_size[0]%32 == 0, 'Multiples of 32 required'
@@ -101,7 +102,7 @@ class YOLO(object):
             boxed_image = letterbox_image(image, new_image_size)
         image_data = np.array(boxed_image, dtype='float32')
 
-        if print_shape:
+        if verbose:
             print(image_data.shape)
         image_data /= 255.
         image_data = np.expand_dims(image_data, 0)  # Add batch dimension.
@@ -114,7 +115,8 @@ class YOLO(object):
                 K.learning_phase(): 0
             })
 
-        print('Found {} boxes for {}'.format(len(out_boxes), 'img'))
+        if verbose:
+            print('Found {} boxes for {}'.format(len(out_boxes), 'img'))
 
         if hasattr(self, 'font') and self.font is not None:
             font = self.font
@@ -156,8 +158,9 @@ class YOLO(object):
             draw.text(text_origin, label, fill=(0, 0, 0), font=font)
             del draw
 
-        end = timer()
-        print(end - start)
+        if verbose:
+            end = timer()
+            print(end - start)
         return image
 
     def close_session(self):
@@ -228,6 +231,7 @@ def detect_img(yolo, img_path):
             break
     yolo.close_session()
 
+
 def detect_picamera(yolo):
     ''' Raspberry PI camera
     '''
@@ -250,6 +254,7 @@ def detect_picamera(yolo):
             break
     cv2.destroyAllWindows()
     yolo.close_session()
+
 
 if __name__ == '__main__':
     # my command python3 ./yolo.py -m  model_data/yolov3-tiny.h5
