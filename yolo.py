@@ -248,6 +248,7 @@ def detect_picamera(yolo):
         try:
             r_image = yolo.detect_image(Image.fromarray(img_frame.array), False)
             cv2.imshow('picam', np.array(r_image))
+            cv2.waitKey(1)
             rawCapture.truncate(0)
         except KeyboardInterrupt:
             print('exiting...')
