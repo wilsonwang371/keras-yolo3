@@ -8,6 +8,7 @@ import argparse
 import colorsys
 import io
 import os
+import time
 from timeit import default_timer as timer
 
 import numpy as np
@@ -244,6 +245,7 @@ def detect_picamera(yolo):
     import queue
 
     global graph
+    global quit_thread
 
     graph = tf.get_default_graph()
     camera = PiCamera()
@@ -252,7 +254,7 @@ def detect_picamera(yolo):
     rawCapture = PiRGBArray(camera, size=(640, 480))
 
     cv2.namedWindow('picam', cv2.WINDOW_NORMAL)
-    cam_q = queue.Queue(16)
+    cam_q = queue.Queue(4)
     processed_q = queue.Queue(16)
     processThread = threading.Thread(target=detect_picamera_yolo_thread_func,
                                      args=(yolo, cam_q, processed_q))
@@ -261,6 +263,10 @@ def detect_picamera(yolo):
     for img_frame in camera.capture_continuous(rawCapture, format='bgr', use_video_port=True):
         try:
             img = Image.fromarray(img_frame.array)
+            if cam_q.full():
+                time.sleep(1)
+                while not cam_q.empty():
+                    cam_q.get()
             cam_q.put(img)
             while not processed_q.empty():
                 cv2.imshow('picam', np.array(processed_q.get()))
