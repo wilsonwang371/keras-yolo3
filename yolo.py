@@ -238,8 +238,10 @@ def detect_picamera(yolo):
         camera.capture(stream, format='jpeg', use_video_port=True)
         #img_array = img_frame.array
         stream.seek(0)
-        r_image = yolo.detect_image(Image.open(stream))
-        cv2.imshow('picam', np.array(r_image))
+        org_img = Image.open(stream)
+        r_image = yolo.detect_image(org_img)
+        cv2.imshow('picam', np.array(org_img))
+        #cv2.imshow('picam', np.array(r_image))
         stream.truncate(0)
         stream.seek(0)
         if cv2.waitKey(1) & 0xFF == ord('q'):
