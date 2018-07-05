@@ -6,6 +6,7 @@ Run a YOLO_v3 style detection model on test images.
 
 import argparse
 import colorsys
+import io
 import os
 from timeit import default_timer as timer
 
@@ -221,7 +222,29 @@ def detect_img(yolo, img_path):
             break
     yolo.close_session()
 
+def detect_picamera(yolo, device=0, port=0):
+    ''' Raspberry PI camera
+    '''
+    from picamera.array import PiRGBArray
+    from picamera import PiCamera
 
+    camera = PiCamera()
+    camera.resolution = (640, 480)
+    #camera.framerate = 32
+    stream = io.BytesIO()
+
+    cv2.namedWindow('picam', cv2.WINDOW_NORMAL)
+    while True:
+        camera.capture(stream, format='bgr', use_video_port=True)
+        #img_array = img_frame.array
+        stream.seek(0)
+        r_image = yolo.detect_image(Image.open(stream))
+        cv2.imshow('picam', np.array(r_image))
+        stream.truncate(0)
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+            break
+    cv2.destroyAllWindows()
+    yolo.close_session()
 
 if __name__ == '__main__':
     # prerequisite: pip3 install "picamera[array]"
@@ -233,6 +256,9 @@ if __name__ == '__main__':
     parser.add_argument('-m', '--modelpath', help='model file path', default='model_data/yolo.h5')
     parser.add_argument('-a', '--anchorpath', help='anchor file path', default='model_data/yolo_anchors.txt')
     parser.add_argument('-c', '--classpath', help='class file path', default='model_data/coco_classes.txt')
-    parser.add_argument('-i', '--image', help='image file path', default='')
+    action = parser.add_mutually_exclusive_group(required=True)
+    action.add_argument('-i', '--image', help='image file path', default='')
+    action.add_argument('-p', '--picam', help='fetch images from Raspberry PI camera',
+                        action='store_true', default=False)
     args = parser.parse_args()
     detect_img(YOLO(args.modelpath, args.anchorpath, args.classpath), args.image)
