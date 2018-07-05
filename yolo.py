@@ -211,7 +211,7 @@ def detect_img(yolo, arg_img):
             continue
         else:
             r_image = yolo.detect_image(image)
-            cv_r_img = np.arrays(r_image)
+            cv_r_img = np.array(r_image)
             #r_image.show()
             cv2.imshow('r_image', cv_r_img)
             input("Press Enter to continue...")
