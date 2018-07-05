@@ -198,9 +198,12 @@ def detect_video(yolo, video_path, output_path=""):
     yolo.close_session()
 
 
-def detect_img(yolo):
+def detect_img(yolo, arg_img):
     while True:
-        img = input('Input image filename:')
+        if arg_img == '':
+            img = input('Input image filename:')
+        else:
+            img = arg_img
         try:
             image = Image.open(img)
         except:
@@ -210,7 +213,10 @@ def detect_img(yolo):
             r_image = yolo.detect_image(image)
             cv_r_img = np.arrays(r_image)
             #r_image.show()
-            cv2.imshow('r_image', r_image)
+            cv2.imshow('r_image', cv_r_img)
+            input("Press Enter to continue...")
+        if arg_img != '':
+            break
     yolo.close_session()
 
 
@@ -225,5 +231,6 @@ if __name__ == '__main__':
     parser.add_argument('-m', '--modelpath', help='model file path', default='model_data/yolo.h5')
     parser.add_argument('-a', '--anchorpath', help='anchor file path', default='model_data/yolo_anchors.txt')
     parser.add_argument('-c', '--classpath', help='class file path', default='model_data/coco_classes.txt')
+    parser.add_argument('-i', '--image', help='image file path', default='')
     args = parser.parse_args()
-    detect_img(YOLO(args.modelpath, args.anchorpath, args.classpath))
+    detect_img(YOLO(args.modelpath, args.anchorpath, args.classpath), args.image)
