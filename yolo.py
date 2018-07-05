@@ -243,6 +243,8 @@ def detect_picamera(yolo):
     import threading
     import queue
 
+    global graph
+
     graph = tf.get_default_graph()
     camera = PiCamera()
     camera.resolution = (640, 480)
@@ -275,6 +277,7 @@ def detect_picamera(yolo):
 
 def detect_picamera_yolo_thread_func(yolo, cam_queue, out_queue):
     global graph
+    assert graph is not None
     with graph.as_default():
         while not quit_thread:
             img = cam_queue.get()
